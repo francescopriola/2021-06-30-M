@@ -7,6 +7,8 @@ package it.polito.tdp.genes;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.jgrapht.graph.DefaultWeightedEdge;
+
 import it.polito.tdp.genes.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,6 +19,8 @@ import javafx.scene.control.TextField;
 public class FXMLController {
 	
 	private Model model ;
+	private int maggiori;
+	private int minori;
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -38,6 +42,31 @@ public class FXMLController {
 
     @FXML
     void doContaArchi(ActionEvent event) {
+    	maggiori = 0;
+    	minori = 0;
+    	String soglia = this.txtSoglia.getText();
+    	
+    	try { 
+    		double s = Integer.parseInt(soglia);
+    		
+    		if(s < model.calcolaPesoMin() || s > model.calcolaPesoMax()) {
+    			txtResult.appendText("Soglia: " + s + "--> Inserisci un valore compreso tra il peso minimo e il massimo!\n");
+    			return;
+    		}
+    		
+    		for(DefaultWeightedEdge edge : this.model.getArchi()) {
+    			if(this.model.getGraph().getEdgeWeight(edge) > s)
+    				maggiori++;
+    			else if(this.model.getGraph().getEdgeWeight(edge) < s)
+    				minori++;
+    		}
+    		
+    		txtResult.appendText("Soglia: " + s + "--> Maggiori " + this.maggiori + ", Minori " + this.minori + "\n");
+			
+		} catch (NumberFormatException e) {
+			txtResult.appendText("Inserisci una soglia numerica!\n");
+			return;
+		}
 
     }
 
@@ -58,5 +87,8 @@ public class FXMLController {
 	public void setModel(Model model) {
 		this.model = model ;
 		
+		model.creaGrafo();
+		txtResult.appendText("GRAFO CREATO: " + model.getVertici() + " vertici, " + model.getNumArchi() + " archi.\n");
+		txtResult.appendText("Peso minimo = " + model.calcolaPesoMin() + "; Peso massimo = " + model.calcolaPesoMax() + "\n");
 	}
 }
