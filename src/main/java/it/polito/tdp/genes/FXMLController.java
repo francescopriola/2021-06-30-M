@@ -47,7 +47,7 @@ public class FXMLController {
     	String soglia = this.txtSoglia.getText();
     	
     	try { 
-    		double s = Integer.parseInt(soglia);
+    		double s = Double.parseDouble(soglia);
     		
     		if(s < model.calcolaPesoMin() || s > model.calcolaPesoMax()) {
     			txtResult.appendText("Soglia: " + s + "--> Inserisci un valore compreso tra il peso minimo e il massimo!\n");
@@ -72,7 +72,21 @@ public class FXMLController {
 
     @FXML
     void doRicerca(ActionEvent event) {
-
+    	txtResult.clear();
+    	String soglia = this.txtSoglia.getText();
+    	
+    	try { 
+    		double s = Double.parseDouble(soglia);
+    		
+    		for(Integer i : model.calcolaPercorso(s))
+        		txtResult.appendText(i + "\n");
+			
+		} catch (NumberFormatException e) {
+			txtResult.appendText("Inserisci una soglia numerica!\n");
+			return;
+		}
+    	
+    	
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
